@@ -33,7 +33,7 @@ class AuthViewModel : ViewModel() {
         checkUserSession()
     }
 
-    private fun checkUserSession() {
+    fun checkUserSession() {
         auth.currentUser?.let { firebaseUser ->
             fetchUserDetails(firebaseUser.uid)
         } ?: _currentUser.postValue(null)

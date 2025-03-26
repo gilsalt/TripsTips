@@ -7,16 +7,68 @@
     android:layout_height="match_parent"
     tools:context=".view.activities.MainActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/primary"
+        android:id="@+id/app_bar"
+        android:visibility="gone"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbar"
+            />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:defaultNavHost="true"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:navGraph="@navigation/nav_graph" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        app:itemIconSize="32dp"
+        app:itemIconTint="@color/white"
+        android:visibility="gone"
+        app:itemTextColor="@color/white"
+        app:itemActiveIndicatorStyle="@android:color/transparent"
+        app:labelVisibilityMode="unlabeled"
+        app:menu="@menu/bottom_nav"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+       <com.google.android.material.floatingactionbutton.FloatingActionButton
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_anchor="@id/bottom_navigation"
+           app:layout_anchorGravity="center"
+           android:visibility="gone"
+           android:src="@drawable/ic_add_location"
+           app:tint="@color/white"
+           app:maxImageSize="36dp"
+           app:backgroundTint="@color/primary"
+           android:layout_marginBottom="45dp"
+           android:id="@+id/fab_add_post"
+           />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

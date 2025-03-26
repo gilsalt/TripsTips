@@ -56,6 +56,19 @@
     <fragment
         android:id="@+id/exploreFragment"
         android:name="com.tripstips.app.view.fragments.ExploreFragment"
-        android:label="fragment_explore"
-        tools:layout="@layout/fragment_explore" />
+        android:label="Trips Tips"
+        tools:layout="@layout/fragment_explore" >
+        <action
+            android:id="@+id/action_exploreFragment_to_profileFragment2"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.tripstips.app.view.fragments.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment2_to_exploreFragment"
+            app:destination="@id/exploreFragment" />
+    </fragment>
 </navigation>
