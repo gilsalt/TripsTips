@@ -6,16 +6,71 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.ProfileFragment">
 
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="Profile"
-        android:textSize="24sp"
+        android:padding="10dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:id="@+id/top_profile_layout"
+        >
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:src="@drawable/placeholder"
+            app:civ_border_width="1dp"
+            app:civ_border_color="@color/primary"
+            android:id="@+id/profile_image"
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Neta Levi"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:id="@+id/name_tv"
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/gray_bg"
+            android:textColor="@color/black"
+            android:text="Edit profile"
+            android:id="@+id/edit_profile_tv"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign Out"
+            android:layout_marginTop="10dp"
+            android:id="@+id/sign_out_btn"
+            android:textSize="16sp"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#ccc"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_profile_layout"
+        android:id="@+id/border_line"
         />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

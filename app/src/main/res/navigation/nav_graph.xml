@@ -70,5 +70,16 @@
         <action
             android:id="@+id/action_profileFragment2_to_exploreFragment"
             app:destination="@id/exploreFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.tripstips.app.view.fragments.EditProfileFragment"
+        android:label="Edit Profile"
+        tools:layout="@layout/fragment_edit_profile" />
 </navigation>

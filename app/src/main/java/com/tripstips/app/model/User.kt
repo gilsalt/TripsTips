@@ -6,7 +6,7 @@ data class User(
     val userId: String = "",
     val name: String = "",
     val email: String = "",
-    val profileImage: String = ""
+    val image: String = ""
 ):Serializable{
     constructor():this("","","","")
 }

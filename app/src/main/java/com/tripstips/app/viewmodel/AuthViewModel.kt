@@ -26,8 +26,8 @@ class AuthViewModel : ViewModel() {
     private val _currentUserStatus = MutableLiveData<String>()
     val currentUserStatus: LiveData<String> get() = _currentUserStatus
 
-    private val _userDetailUpdateStatus = MutableLiveData<String>()
-    val userDetailUpdateStatus: LiveData<String> get() = _userDetailUpdateStatus
+    private val _profileUpdateStatus = MutableLiveData<String>()
+    val profileUpdateStatus: LiveData<String> get() = _profileUpdateStatus
 
     init {
         checkUserSession()
@@ -122,13 +122,13 @@ class AuthViewModel : ViewModel() {
                             .update(updates).await()
                         fetchUserDetails(user.uid)
                         delay(3000)
-                        _userDetailUpdateStatus.postValue("Profile updated successfully")
+                        _profileUpdateStatus.postValue("Profile updated successfully")
                     } else {
-                        _userDetailUpdateStatus.postValue("No changes to update")
+                        _profileUpdateStatus.postValue("No changes to update")
                     }
                 }
             } catch (e: Exception) {
-                _userDetailUpdateStatus.postValue("Failed to update profile: ${e.message}")
+                _profileUpdateStatus.postValue("Failed to update profile: ${e.message}")
             }
         }
     }
@@ -139,7 +139,7 @@ class AuthViewModel : ViewModel() {
             storageRef.putFile(imageUri).await()
             storageRef.downloadUrl.await().toString()
         } catch (e: Exception) {
-            _userDetailUpdateStatus.postValue("Profile image upload failed: ${e.message}")
+            _profileUpdateStatus.postValue("Profile image upload failed: ${e.message}")
             ""
         }
     }
