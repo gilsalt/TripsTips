@@ -16,6 +16,7 @@ class PostAdapter(private val posts: MutableList<Post>) :
 
     interface OnItemClickListener {
         fun onItemClick(position: Int, post: Post)
+        fun onItemLikeClick(position: Int,post: Post)
     }
 
     private var mListener: OnItemClickListener? = null
@@ -58,6 +59,8 @@ class PostAdapter(private val posts: MutableList<Post>) :
                 }
                 userName.text = post.user.name
                 postDate.text = BaseActivity.getTimeAgo(post.timestamp)
+                postLikeView.text = "${post.likes} Likes"
+                postCommentView.text = "${post.totalComments} Comments"
                 if (post.image.isNullOrEmpty()) {
                     postImage.visibility = View.GONE
                 } else {
@@ -68,6 +71,10 @@ class PostAdapter(private val posts: MutableList<Post>) :
                         .resize(600,400)
                         .centerCrop()
                         .into(postImage)
+                }
+
+                binding.postLikeView.setOnClickListener {
+                    mListener.onItemLikeClick(layoutPosition,post)
                 }
 
                 binding.root.setOnClickListener {

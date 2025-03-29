@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navArgument
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -60,6 +61,14 @@ class CityPostFragment : Fragment() {
         binding.postsRecyclerview.adapter = adapter
         adapter.setOnItemClickListener(object :PostAdapter.OnItemClickListener{
             override fun onItemClick(position: Int, post: Post) {
+                val action = CityPostFragmentDirections.actionCityPostFragmentToDetailFragment(post)
+                findNavController().navigate(action)
+
+            }
+
+            override fun onItemLikeClick(position: Int, post: Post) {
+                postViewModel.updateLikeCount("${post.id}",true)
+                adapter.notifyItemChanged(position)
             }
         })
         getPostsByCity("${city?.name}")
@@ -67,6 +76,9 @@ class CityPostFragment : Fragment() {
 
     private fun getPostsByCity(city: String) {
         postViewModel.getPostsByCity(city).observe(viewLifecycleOwner, Observer { posts ->
+            if (posts.isNotEmpty()){
+                postsList.clear()
+            }
             postsList.addAll(posts)
             adapter.notifyItemChanged(0,postsList.size)
         })

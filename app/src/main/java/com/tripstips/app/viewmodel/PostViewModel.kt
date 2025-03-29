@@ -12,6 +12,12 @@ import kotlinx.coroutines.launch
 
 class PostViewModel(private val repository: PostRepository) : ViewModel() {
 
+    fun syncPosts() {
+        viewModelScope.launch {
+            repository.syncPosts()
+        }
+    }
+
     fun insert(post: Post, imageUri: Uri? = null, callback: PostCallback) {
         viewModelScope.launch {
             repository.insert(post, imageUri, callback)
@@ -40,4 +46,9 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
         return repository.getPostsByUserId(userId)
     }
 
+    fun updateLikeCount(postId: String, isLiked: Boolean) {
+        viewModelScope.launch {
+            repository.updateLikeCount(postId, isLiked)
+        }
+    }
 }

@@ -10,14 +10,16 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Post(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val city: String,
+    var city: String,
     val image: String? = null,
-    val description: String,
-    val address: String,
+    var description: String,
+    var address: String,
     val totalComments: Int = 0,
-    val likes: Int = 0,
+    var likes: Int = 0,
     val firestoreId: String? = null,
     val timestamp:Long = System.currentTimeMillis(),
-   @Embedded val user: User? = null
-):Parcelable
+    @Embedded val user: User? = null
+):Parcelable{
+    constructor():this(0,"","","","",0,0,"",0,null)
+}
 

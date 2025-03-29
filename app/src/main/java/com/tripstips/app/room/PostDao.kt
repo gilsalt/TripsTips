@@ -23,4 +23,13 @@ interface PostDao {
 
     @Query("SELECT * FROM posts WHERE userId = :userId")
     fun getPostsByUserId(userId: String): LiveData<List<Post>>
+
+    @Query("SELECT * FROM posts WHERE id = :postId LIMIT 1")
+    fun getPostById(postId: String): Post?
+
+    @Update
+    fun updatePost(post: Post)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertOrUpdatePosts(posts: List<Post>)
 }

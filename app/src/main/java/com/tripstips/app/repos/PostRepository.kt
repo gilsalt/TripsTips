@@ -8,13 +8,28 @@ import com.google.firebase.storage.FirebaseStorage
 import com.tripstips.app.interfaces.PostCallback
 import com.tripstips.app.model.Post
 import com.tripstips.app.room.PostDao
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class PostRepository(private val postDao: PostDao) {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val postsCollection = firestore.collection("posts")
     private val storageRef = FirebaseStorage.getInstance().reference.child("post_images")
+
+    suspend fun syncPosts() {
+        withContext(Dispatchers.IO) {
+            try {
+                val snapshot = postsCollection.get().await()
+                val firestorePosts = snapshot.toObjects(Post::class.java)
+                // ✅ Insert or update posts in Room
+                postDao.insertOrUpdatePosts(firestorePosts)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     suspend fun insert(post: Post, imageUri: Uri? = null, callback: PostCallback) {
         try {
@@ -111,4 +126,17 @@ class PostRepository(private val postDao: PostDao) {
     fun getPostsByUserId(userId: String): LiveData<List<Post>> {
         return postDao.getPostsByUserId(userId)
     }
+
+    suspend fun updateLikeCount(postId: String, isLiked: Boolean) {
+        withContext(Dispatchers.IO) {
+            val post = postDao.getPostById(postId)
+            if (post != null) {
+                val newLikeCount = if (isLiked) post.likes + 1 else post.likes - 1
+                post.likes = newLikeCount
+                postDao.updatePost(post)
+                postsCollection.document("${post.firestoreId}").update("likes", newLikeCount).await()
+            }
+        }
+    }
+
 }
