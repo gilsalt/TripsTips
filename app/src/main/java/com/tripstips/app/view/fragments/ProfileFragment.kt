@@ -42,8 +42,8 @@ class ProfileFragment : Fragment() {
 
         val user = BaseActivity.loggedUser
         if (user != null){
-            if (user.image.isNotEmpty()){
-                Picasso.get().load(user.image)
+            if (user.userImage.isNotEmpty()){
+                Picasso.get().load(user.userImage)
                     .placeholder(R.drawable.loader)
                     .error(R.drawable.placeholder)
                     .resize(100,100)

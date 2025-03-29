@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.tripstips.app.R
 import com.tripstips.app.adapters.CityAdapter
 import com.tripstips.app.databinding.FragmentExploreBinding
 import com.tripstips.app.model.City

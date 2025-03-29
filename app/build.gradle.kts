@@ -87,6 +87,9 @@ dependencies {
     // CIRCLE IMAGEVIEW
     implementation(libs.circleimageview)
 
+    implementation(libs.play.services.location) // Location Services
+    implementation(libs.places)
+
     // FIREBASE
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)

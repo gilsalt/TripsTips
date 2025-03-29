@@ -11,11 +11,18 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navArgument
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.tripstips.app.R
+import com.tripstips.app.adapters.PostAdapter
 import com.tripstips.app.databinding.FragmentCityPostBinding
 import com.tripstips.app.model.City
+import com.tripstips.app.model.Post
+import com.tripstips.app.repos.PostRepository
+import com.tripstips.app.room.PostDatabase
 import com.tripstips.app.view.activities.MainActivity
+import com.tripstips.app.viewmodel.PostViewModel
 import com.tripstips.app.viewmodel.WeatherViewModel
+import com.tripstips.app.viewmodelfactory.PostViewModelFactory
 
 
 class CityPostFragment : Fragment() {
@@ -24,6 +31,11 @@ class CityPostFragment : Fragment() {
     private var city:City?=null
     val apiKey = "e572674eea9c73a4e16cf8e04e675e9a" // Replace with your API key
     private val weatherViewModel: WeatherViewModel by viewModels()
+    private var postsList = mutableListOf<Post>()
+    private lateinit var adapter: PostAdapter
+    private val postViewModel: PostViewModel by viewModels {
+        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao()))
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +54,22 @@ class CityPostFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         displayWeatherDetails()
+        binding.postsRecyclerview.layoutManager = LinearLayoutManager(requireActivity())
+        binding.postsRecyclerview.hasFixedSize()
+        adapter = PostAdapter(postsList)
+        binding.postsRecyclerview.adapter = adapter
+        adapter.setOnItemClickListener(object :PostAdapter.OnItemClickListener{
+            override fun onItemClick(position: Int, post: Post) {
+            }
+        })
+        getPostsByCity("${city?.name}")
+    }
 
+    private fun getPostsByCity(city: String) {
+        postViewModel.getPostsByCity(city).observe(viewLifecycleOwner, Observer { posts ->
+            postsList.addAll(posts)
+            adapter.notifyItemChanged(0,postsList.size)
+        })
     }
 
     private fun displayWeatherDetails(){

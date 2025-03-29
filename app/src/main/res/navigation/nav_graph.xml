@@ -64,6 +64,9 @@
         <action
             android:id="@+id/action_exploreFragment_to_cityPostFragment"
             app:destination="@id/cityPostFragment" />
+        <action
+            android:id="@+id/action_exploreFragment_to_newPostFragment"
+            app:destination="@id/newPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -95,4 +98,9 @@
             app:argType="com.tripstips.app.model.City"/>
 
     </fragment>
+    <fragment
+        android:id="@+id/newPostFragment"
+        android:name="com.tripstips.app.view.fragments.NewPostFragment"
+        android:label="Add New Post"
+        tools:layout="@layout/fragment_new_post" />
 </navigation>

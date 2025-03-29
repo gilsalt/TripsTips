@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -27,6 +28,10 @@ class MainActivity : BaseActivity() {
 
         setUpToolbar()
         setUpNavController()
+
+        binding.fabAddPost.setOnClickListener {
+           navController.navigate(R.id.newPostFragment)
+        }
     }
 
     private fun setUpToolbar(){

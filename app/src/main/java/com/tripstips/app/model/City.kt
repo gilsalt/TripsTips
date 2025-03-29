@@ -5,7 +5,11 @@ import com.tripstips.app.R
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class City(val name: String, val imageRes: Int):Parcelable
+data class City(val name: String, val imageRes: Int):Parcelable{
+    override fun toString(): String {
+        return name
+    }
+}
 
 val cities = listOf(
     City("Berlin", R.drawable.berlin),
