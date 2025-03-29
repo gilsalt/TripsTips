@@ -102,6 +102,9 @@
         <action
             android:id="@+id/action_cityPostFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_cityPostFragment_to_postCommentSheetFragment"
+            app:destination="@id/postCommentSheetFragment" />
 
     </fragment>
     <fragment
@@ -120,6 +123,9 @@
 
         <argument android:name="post"
             app:argType="com.tripstips.app.model.Post"/>
+        <action
+            android:id="@+id/action_detailFragment_to_postCommentSheetFragment"
+            app:destination="@id/postCommentSheetFragment" />
 
     </fragment>
     <fragment
@@ -132,5 +138,14 @@
             app:argType="com.tripstips.app.model.Post"/>
 
     </fragment>
+    <dialog
+        android:id="@+id/postCommentSheetFragment"
+        android:name="com.tripstips.app.view.fragments.PostCommentSheetFragment"
+        android:label="Post Comment Sheet"
+        tools:layout="@layout/fragment_post_comment_sheet" >
+
+        <argument android:name="post"
+            app:argType="com.tripstips.app.model.Post"/>
+    </dialog>
 
 </navigation>

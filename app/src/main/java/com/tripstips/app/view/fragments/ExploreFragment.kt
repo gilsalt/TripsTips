@@ -25,7 +25,7 @@ class ExploreFragment : Fragment() {
     private lateinit var adapter:CityAdapter
     private var citiesList = mutableListOf<City>()
     private val postViewModel: PostViewModel by viewModels {
-        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao()))
+        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao(),PostDatabase.getDatabase(requireContext()).commentDao()))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

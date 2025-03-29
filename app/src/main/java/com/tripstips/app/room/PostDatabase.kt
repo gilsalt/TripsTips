@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.tripstips.app.model.Comment
 import com.tripstips.app.model.Post
 
-@Database(entities = [Post::class], version = 1, exportSchema = false)
+@Database(entities = [Post::class,Comment::class], version = 2, exportSchema = false)
 abstract class PostDatabase : RoomDatabase() {
     abstract fun postDao(): PostDao
+    abstract fun commentDao():CommentDao
 
     companion object {
         @Volatile

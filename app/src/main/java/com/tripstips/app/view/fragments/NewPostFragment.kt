@@ -42,7 +42,7 @@ class NewPostFragment : Fragment() {
     private var selectedLocation: String = ""
     private var selectedCity: String = ""
     private val postViewModel: PostViewModel by viewModels {
-        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao()))
+        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao(),PostDatabase.getDatabase(requireContext()).commentDao()))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

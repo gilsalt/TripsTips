@@ -32,4 +32,7 @@ interface PostDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrUpdatePosts(posts: List<Post>)
+
+    @Query("UPDATE posts SET totalComments = :count WHERE firestoreId = :postId")
+    fun updateCommentCount(postId: String, count: Int)
 }

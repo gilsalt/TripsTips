@@ -35,7 +35,7 @@ class CityPostFragment : Fragment() {
     private var postsList = mutableListOf<Post>()
     private lateinit var adapter: PostAdapter
     private val postViewModel: PostViewModel by viewModels {
-        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao()))
+        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao(),PostDatabase.getDatabase(requireContext()).commentDao()))
     }
 
     override fun onCreateView(
@@ -69,6 +69,11 @@ class CityPostFragment : Fragment() {
             override fun onItemLikeClick(position: Int, post: Post) {
                 postViewModel.updateLikeCount("${post.id}",true)
                 adapter.notifyItemChanged(position)
+            }
+
+            override fun onItemCommentClick(position: Int, post: Post) {
+                val action = CityPostFragmentDirections.actionCityPostFragmentToPostCommentSheetFragment(post)
+                findNavController().navigate(action)
             }
         })
         getPostsByCity("${city?.name}")

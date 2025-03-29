@@ -6,16 +6,19 @@ import androidx.lifecycle.LiveData
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.tripstips.app.interfaces.PostCallback
+import com.tripstips.app.model.Comment
 import com.tripstips.app.model.Post
+import com.tripstips.app.room.CommentDao
 import com.tripstips.app.room.PostDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class PostRepository(private val postDao: PostDao) {
+class PostRepository(private val postDao: PostDao,private val commentDao: CommentDao) {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val postsCollection = firestore.collection("posts")
+    private val commentsCollection = firestore.collection("comments")
     private val storageRef = FirebaseStorage.getInstance().reference.child("post_images")
 
     suspend fun syncPosts() {
@@ -23,7 +26,6 @@ class PostRepository(private val postDao: PostDao) {
             try {
                 val snapshot = postsCollection.get().await()
                 val firestorePosts = snapshot.toObjects(Post::class.java)
-                // ✅ Insert or update posts in Room
                 postDao.insertOrUpdatePosts(firestorePosts)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -117,12 +119,10 @@ class PostRepository(private val postDao: PostDao) {
         }
     }
 
-    // Fetch posts by city from Room
     fun getPostsByCity(city: String): LiveData<List<Post>> {
         return postDao.getPostsByCity(city)
     }
 
-    // Fetch posts by userId from Room
     fun getPostsByUserId(userId: String): LiveData<List<Post>> {
         return postDao.getPostsByUserId(userId)
     }
@@ -135,6 +135,57 @@ class PostRepository(private val postDao: PostDao) {
                 post.likes = newLikeCount
                 postDao.updatePost(post)
                 postsCollection.document("${post.firestoreId}").update("likes", newLikeCount).await()
+            }
+        }
+    }
+
+    fun getComments(postId: String): LiveData<List<Comment>> = commentDao.getCommentsByPostId(postId)
+
+    suspend fun syncComments(postId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val snapshot = commentsCollection.whereEqualTo("postId", postId).get().await()
+                val firestoreComments = snapshot.toObjects(Comment::class.java)
+                commentDao.insertOrUpdateComments(firestoreComments)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun addComment(comment: Comment) {
+        withContext(Dispatchers.IO) {
+            try {
+                commentDao.insertComment(comment)
+                commentsCollection.document(comment.id).set(comment).await()
+                updateCommentCount(comment.postId)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun deleteComment(commentId: String,postId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                commentsCollection.document(commentId).delete().await()
+                commentDao.deleteComment(commentId)
+                updateCommentCount(postId)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private suspend fun updateCommentCount(postId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val snapshot = commentsCollection.whereEqualTo("postId", postId).get().await()
+                val count = snapshot.size()
+                postsCollection.document(postId).update("totalComments", count).await()
+                postDao.updateCommentCount(postId, count)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

@@ -6,20 +6,36 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.picasso.Picasso
 import com.tripstips.app.R
+import com.tripstips.app.adapters.CreatedPostAdapter
+import com.tripstips.app.adapters.PostAdapter
 import com.tripstips.app.databinding.FragmentProfileBinding
+import com.tripstips.app.model.Post
+import com.tripstips.app.repos.PostRepository
+import com.tripstips.app.room.PostDatabase
 import com.tripstips.app.view.activities.BaseActivity
 import com.tripstips.app.view.activities.MainActivity
 import com.tripstips.app.viewmodel.AuthViewModel
+import com.tripstips.app.viewmodel.PostViewModel
+import com.tripstips.app.viewmodelfactory.PostViewModelFactory
 
 
 class ProfileFragment : Fragment() {
 
     private lateinit var binding:FragmentProfileBinding
     private lateinit var authViewModel: AuthViewModel
+    private val postViewModel: PostViewModel by viewModels {
+        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao(),PostDatabase.getDatabase(requireContext()).commentDao()))
+    }
+    private lateinit var adapter:CreatedPostAdapter
+    private var postsList = mutableListOf<Post>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,5 +87,27 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        binding.createdPostsRecyclerview.layoutManager = GridLayoutManager(requireActivity(),2)
+        binding.createdPostsRecyclerview.hasFixedSize()
+        adapter = CreatedPostAdapter(postsList)
+        binding.createdPostsRecyclerview.adapter = adapter
+        adapter.setOnItemClickListener(object : CreatedPostAdapter.OnItemClickListener{
+            override fun onItemClick(position: Int, post: Post) {
+                val action = ProfileFragmentDirections.actionProfileFragmentToDetailFragment(post)
+                findNavController().navigate(action)
+
+            }
+        })
+        getPostsByUserId()
+    }
+
+    private fun getPostsByUserId() {
+        postViewModel.getPostsByUserId("${BaseActivity.loggedUser?.userId}").observe(viewLifecycleOwner, Observer { posts ->
+            if (posts.isNotEmpty()){
+                postsList.clear()
+            }
+            postsList.addAll(posts)
+            adapter.notifyItemChanged(0,postsList.size)
+        })
     }
 }

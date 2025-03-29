@@ -26,7 +26,7 @@ class DetailFragment : Fragment() {
     private lateinit var binding:FragmentDetailBinding
     private var post:Post?=null
     private val postViewModel: PostViewModel by viewModels {
-        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao()))
+        PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao(),PostDatabase.getDatabase(requireContext()).commentDao()))
     }
 
     override fun onCreateView(
@@ -81,6 +81,12 @@ class DetailFragment : Fragment() {
                 postLikeView.setOnClickListener {
                   postViewModel.updateLikeCount("$id",true)
                     postLikeView.text = "${likes+1} Likes"
+                }
+
+                postCommentView.setOnClickListener {
+                        val action = DetailFragmentDirections.actionDetailFragmentToPostCommentSheetFragment(post!!)
+                        findNavController().navigate(action)
+
                 }
 
                 postEditView.setOnClickListener {
