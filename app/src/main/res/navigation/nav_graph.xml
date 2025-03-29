@@ -61,6 +61,9 @@
         <action
             android:id="@+id/action_exploreFragment_to_profileFragment2"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_exploreFragment_to_cityPostFragment"
+            app:destination="@id/cityPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -82,4 +85,14 @@
         android:name="com.tripstips.app.view.fragments.EditProfileFragment"
         android:label="Edit Profile"
         tools:layout="@layout/fragment_edit_profile" />
+    <fragment
+        android:id="@+id/cityPostFragment"
+        android:name="com.tripstips.app.view.fragments.CityPostFragment"
+        android:label="City Posts"
+        tools:layout="@layout/fragment_city_post" >
+
+        <argument android:name="city"
+            app:argType="com.tripstips.app.model.City"/>
+
+    </fragment>
 </navigation>

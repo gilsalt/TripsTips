@@ -82,6 +82,10 @@ class MainActivity : BaseActivity() {
 
     }
 
+    fun updateToolbarTitle(title: String) {
+        supportActionBar?.title = title
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
