@@ -15,16 +15,16 @@ interface PostDao {
     @Delete
     suspend fun delete(post: Post)
 
-    @Query("SELECT * FROM posts ORDER BY id DESC")
+    @Query("SELECT * FROM posts WHERE firestoreId != 'NULL' ORDER BY id DESC")
     fun getAllPosts(): LiveData<List<Post>>
 
-    @Query("SELECT * FROM posts WHERE city = :city")
+    @Query("SELECT * FROM posts WHERE city = :city AND firestoreId != 'NULL'")
     fun getPostsByCity(city: String): LiveData<List<Post>>
 
-    @Query("SELECT * FROM posts WHERE userId = :userId")
+    @Query("SELECT * FROM posts WHERE userId = :userId AND firestoreId != 'NULL'")
     fun getPostsByUserId(userId: String): LiveData<List<Post>>
 
-    @Query("SELECT * FROM posts WHERE id = :postId LIMIT 1")
+    @Query("SELECT * FROM posts WHERE id = :postId AND firestoreId != 'NULL' LIMIT 1")
     fun getPostById(postId: String): Post?
 
     @Update

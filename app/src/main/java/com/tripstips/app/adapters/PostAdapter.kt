@@ -49,45 +49,46 @@ class PostAdapter(private val posts: MutableList<Post>) :
         private val mListener: OnItemClickListener
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(post: Post) {
-            binding.apply {
-                if (post.user?.userImage!!.isNotEmpty()){
-                    Picasso.get().load(post.user.userImage)
-                        .placeholder(R.drawable.loader)
-                        .error(R.drawable.placeholder)
-                        .resize(100,100)
-                        .centerCrop()
-                        .into(userImage)
-                }
-                userName.text = post.user.name
-                postDate.text = BaseActivity.getTimeAgo(post.timestamp)
-                postLikeView.text = "${post.likes} Likes"
-                postCommentView.text = "${post.totalComments} Comments"
-                if (post.image.isNullOrEmpty()) {
-                    postImage.visibility = View.GONE
-                } else {
-                    postImage.visibility = View.VISIBLE
-                    Picasso.get().load(post.image)
-                        .placeholder(R.drawable.loader)
-                        .error(R.drawable.placeholder)
-                        .resize(600,400)
-                        .centerCrop()
-                        .into(postImage)
+
+                if(post.firestoreId != null) {
+                    if (post.user?.userImage!!.isNotEmpty()) {
+                        Picasso.get().load(post.user.userImage)
+                            .placeholder(R.drawable.loader)
+                            .error(R.drawable.placeholder)
+                            .resize(100, 100)
+                            .centerCrop()
+                            .into(binding.userImage)
+                    }
+                    binding.userName.text = post.user.name
+                    binding.postDate.text = BaseActivity.getTimeAgo(post.timestamp)
+                    binding.postLikeView.text = "${post.likes} Likes"
+                    binding.postCommentView.text = "${post.totalComments} Comments"
+                    binding.postDescription.text = post.description
+                    if (post.image.isNullOrEmpty()) {
+                        binding.postImage.visibility = View.GONE
+                    } else {
+                        binding.postImage.visibility = View.VISIBLE
+                        Picasso.get().load(post.image)
+                            .placeholder(R.drawable.loader)
+                            .error(R.drawable.placeholder)
+                            .resize(600, 400)
+                            .centerCrop()
+                            .into(binding.postImage)
+                    }
+
+                    binding.postLikeView.setOnClickListener {
+                        mListener.onItemLikeClick(layoutPosition, post)
+                    }
+
+                    binding.postCommentView.setOnClickListener {
+                        mListener.onItemCommentClick(layoutPosition, post)
+                    }
+
+                    binding.root.setOnClickListener {
+                        mListener.onItemClick(layoutPosition, post)
+                    }
                 }
 
-                binding.postLikeView.setOnClickListener {
-                    mListener.onItemLikeClick(layoutPosition,post)
-                }
-
-                binding.postCommentView.setOnClickListener {
-                    mListener.onItemCommentClick(layoutPosition,post)
-                }
-
-                binding.root.setOnClickListener {
-                    mListener.onItemClick(layoutPosition, post)
-                }
-
-                postDescription.text = post.description
-            }
         }
     }
 
