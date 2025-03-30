@@ -28,6 +28,7 @@ class DetailFragment : Fragment() {
     private val postViewModel: PostViewModel by viewModels {
         PostViewModelFactory(PostRepository(PostDatabase.getDatabase(requireContext()).postDao(),PostDatabase.getDatabase(requireContext()).commentDao()))
     }
+    var flag = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,9 +41,7 @@ class DetailFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    private fun renderPostDetails(){
         post?.apply {
             binding.apply {
                 if (user?.userImage!!.isNotEmpty()){
@@ -56,6 +55,8 @@ class DetailFragment : Fragment() {
                 userName.text = user.name
                 postDate.text = BaseActivity.getTimeAgo(timestamp)
                 postDescription.text = description
+                val isLiked = post!!.likedBy.contains(BaseActivity.loggedUser?.userId)
+                postLikeView.setCompoundDrawablesWithIntrinsicBounds(if (isLiked) R.drawable.ic_thumb_up_solid else R.drawable.ic_thumb_up_outline,0, 0, 0)
                 postLikeView.text = "${likes} Likes"
                 postCommentView.text = "${totalComments} Comments"
                 if (image.isNullOrEmpty()) {
@@ -79,13 +80,31 @@ class DetailFragment : Fragment() {
                 }
 
                 postLikeView.setOnClickListener {
-                  postViewModel.updateLikeCount("$id",true)
-                    postLikeView.text = "${likes+1} Likes"
+                    val userId = BaseActivity.loggedUser?.userId ?: return@setOnClickListener
+                    val mutableLikedBy = post!!.likedBy.toMutableList()
+                    var updatedLikes = post!!.likes
+
+                    if (mutableLikedBy.contains(userId)) {
+                        mutableLikedBy.remove(userId)
+                        updatedLikes -= 1
+                        postLikeView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_thumb_up_outline, 0, 0, 0)
+                    } else {
+                        mutableLikedBy.add(userId)
+                        updatedLikes += 1
+                        postLikeView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_thumb_up_solid, 0, 0, 0)
+                    }
+
+                    post = post!!.copy(likedBy = mutableLikedBy, likes = updatedLikes)
+                    postLikeView.text = "$updatedLikes Likes"
+
+                    postViewModel.updateLikeCount("${post!!.firestoreId}", userId)
                 }
 
+
+
                 postCommentView.setOnClickListener {
-                        val action = DetailFragmentDirections.actionDetailFragmentToPostCommentSheetFragment(post!!)
-                        findNavController().navigate(action)
+                    val action = DetailFragmentDirections.actionDetailFragmentToPostCommentSheetFragment(post!!)
+                    findNavController().navigate(action)
 
                 }
 
@@ -122,4 +141,14 @@ class DetailFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        renderPostDetails()
+        postViewModel.getPostById("${post!!.firestoreId}").observe(viewLifecycleOwner) { updatedPost ->
+            if (updatedPost != null) {
+                post = updatedPost
+                renderPostDetails()
+            }
+        }
+    }
 }

@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.tripstips.app.utils.Converters
 import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "posts")
@@ -18,7 +20,8 @@ data class Post(
     var likes: Int = 0,
     val firestoreId: String? = null,
     val timestamp:Long = System.currentTimeMillis(),
-    @Embedded val user: User? = null
+    @Embedded val user: User? = null,
+    @TypeConverters(Converters::class) var likedBy: List<String> = emptyList()
 ):Parcelable{
     constructor():this(0,"","","","",0,0,"",0,null)
 }

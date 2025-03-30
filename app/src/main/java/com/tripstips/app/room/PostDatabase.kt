@@ -4,10 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.tripstips.app.model.Comment
 import com.tripstips.app.model.Post
+import com.tripstips.app.utils.Converters
 
-@Database(entities = [Post::class,Comment::class], version = 2, exportSchema = false)
+@Database(entities = [Post::class,Comment::class], version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class PostDatabase : RoomDatabase() {
     abstract fun postDao(): PostDao
     abstract fun commentDao():CommentDao

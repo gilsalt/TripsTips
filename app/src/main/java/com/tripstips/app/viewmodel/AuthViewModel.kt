@@ -58,11 +58,10 @@ class AuthViewModel : ViewModel() {
                         "userId" to userId,
                         "name" to name,
                         "email" to email,
-                        "image" to imageUrl
+                        "userImage" to imageUrl
                     )
-
+                    BaseActivity.loggedUser = User(userId,name,email, imageUrl)
                     saveUserToFireStore(userId, userData)
-
                     _currentUser.postValue(User(userId,name, email, imageUrl))
                 }
             } catch (e: Exception) {

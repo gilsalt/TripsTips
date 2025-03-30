@@ -51,7 +51,8 @@ class PostAdapter(private val posts: MutableList<Post>) :
         fun bind(post: Post) {
 
                 if(post.firestoreId != null) {
-                    if (post.user?.userImage!!.isNotEmpty()) {
+
+                    if (post.user != null && post.user.userImage.isNotEmpty()) {
                         Picasso.get().load(post.user.userImage)
                             .placeholder(R.drawable.loader)
                             .error(R.drawable.placeholder)
@@ -59,8 +60,10 @@ class PostAdapter(private val posts: MutableList<Post>) :
                             .centerCrop()
                             .into(binding.userImage)
                     }
-                    binding.userName.text = post.user.name
+                    binding.userName.text = post.user?.name
                     binding.postDate.text = BaseActivity.getTimeAgo(post.timestamp)
+                    val isLiked = post.likedBy.contains(BaseActivity.loggedUser?.userId)
+                    binding.postLikeView.setCompoundDrawablesWithIntrinsicBounds(if (isLiked) R.drawable.ic_thumb_up_solid else R.drawable.ic_thumb_up_outline,0, 0, 0)
                     binding.postLikeView.text = "${post.likes} Likes"
                     binding.postCommentView.text = "${post.totalComments} Comments"
                     binding.postDescription.text = post.description

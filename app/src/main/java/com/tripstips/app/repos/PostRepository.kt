@@ -13,6 +13,7 @@ import com.tripstips.app.room.PostDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class PostRepository(private val postDao: PostDao,private val commentDao: CommentDao) {
 
@@ -39,22 +40,25 @@ class PostRepository(private val postDao: PostDao,private val commentDao: Commen
             val savedPost = post.copy(id = postId)
 
             val firestoreId = syncPostWithFirestore(savedPost)
-            val updatedPost = savedPost.copy(firestoreId = firestoreId)
-            postDao.update(updatedPost)
 
-            imageUri?.let {
-                uploadImageAndUpdatePost(updatedPost, it, callback)
-            } ?: callback.onSuccess("Post added successfully!")
+            if (firestoreId.isNotEmpty()) {
+                val updatedPost = savedPost.copy(firestoreId = firestoreId)
+                postDao.update(updatedPost)
 
+                imageUri?.let {
+                    uploadImageAndUpdatePost(updatedPost, it, callback)
+                } ?: callback.onSuccess("Post added successfully!")
+            }
         } catch (e: Exception) {
             callback.onFailure("Failed to add post: ${e.message}")
         }
     }
 
+
     suspend fun update(post: Post, newImageUri: Uri? = null, callback: PostCallback) {
         try {
             postDao.update(post)
-            syncPostWithFirestore(post)
+           val temp = syncPostWithFirestore(post)
 
             newImageUri?.let {
                 uploadImageAndUpdatePost(post, it, callback)
@@ -82,17 +86,20 @@ class PostRepository(private val postDao: PostDao,private val commentDao: Commen
         }
     }
 
-    private suspend fun syncPostWithFirestore(post: Post): String? {
-        return try {
+    private suspend fun syncPostWithFirestore(post: Post): String {
+        try {
             val docRef = if (post.firestoreId.isNullOrEmpty()) {
-                postsCollection.add(post).await()
+                val ref = UUID.randomUUID().toString()
+                 val updatePost = post.copy(firestoreId = ref)
+                 postsCollection.document(ref).set(updatePost).await()
+                ref
             } else {
                 postsCollection.document(post.firestoreId).set(post).await()
-                postsCollection.document(post.firestoreId)
+                post.firestoreId
             }
-            docRef.id
+            return docRef
         } catch (e: Exception) {
-            null
+            return ""
         }
     }
 
@@ -105,7 +112,7 @@ class PostRepository(private val postDao: PostDao,private val commentDao: Commen
 
             val updatedPost = post.copy(image = newDownloadUrl)
             postDao.update(updatedPost)
-            syncPostWithFirestore(updatedPost)
+          val temp =  syncPostWithFirestore(updatedPost)
 
             callback.onSuccess("Image uploaded successfully!")
 
@@ -127,14 +134,34 @@ class PostRepository(private val postDao: PostDao,private val commentDao: Commen
         return postDao.getPostsByUserId(userId)
     }
 
-    suspend fun updateLikeCount(postId: String, isLiked: Boolean) {
+    fun getPostById(postId: String): LiveData<Post?> {
+        return postDao.getPostByFireStoreId(postId)
+    }
+
+    suspend fun updateLikeCount(postId: String, userId: String) {
         withContext(Dispatchers.IO) {
             val post = postDao.getPostById(postId)
-            if (post != null) {
-                val newLikeCount = if (isLiked) post.likes + 1 else post.likes - 1
-                post.likes = newLikeCount
-                postDao.updatePost(post)
-                postsCollection.document("${post.firestoreId}").update("likes", newLikeCount).await()
+
+            post?.let {
+                val likedByList = it.likedBy.toMutableList()
+
+                val isLiked = likedByList.contains(userId)
+
+                if (isLiked) {
+                    likedByList.remove(userId)
+                    it.likes -= 1
+                } else {
+                    likedByList.add(userId)
+                    it.likes += 1
+                }
+
+                postDao.updateLikeData("${it.firestoreId}", it.likes, likedByList)
+
+                val postRef = postsCollection.document("${it.firestoreId}")
+                postRef.update(mapOf(
+                    "likes" to it.likes,
+                    "likedBy" to likedByList
+                )).await()
             }
         }
     }

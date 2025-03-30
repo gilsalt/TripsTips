@@ -24,8 +24,11 @@ interface PostDao {
     @Query("SELECT * FROM posts WHERE userId = :userId AND firestoreId != 'NULL'")
     fun getPostsByUserId(userId: String): LiveData<List<Post>>
 
-    @Query("SELECT * FROM posts WHERE id = :postId AND firestoreId != 'NULL' LIMIT 1")
+    @Query("SELECT * FROM posts WHERE firestoreId = :postId AND firestoreId != 'NULL' LIMIT 1")
     fun getPostById(postId: String): Post?
+
+    @Query("SELECT * FROM posts WHERE firestoreId = :postId AND firestoreId != 'NULL' LIMIT 1")
+    fun getPostByFireStoreId(postId: String): LiveData<Post?>
 
     @Update
     fun updatePost(post: Post)
@@ -35,4 +38,7 @@ interface PostDao {
 
     @Query("UPDATE posts SET totalComments = :count WHERE firestoreId = :postId")
     fun updateCommentCount(postId: String, count: Int)
+
+    @Query("UPDATE posts SET likes = :likeCount, likedBy = :likedBy WHERE firestoreId = :postId")
+    suspend fun updateLikeData(postId: String, likeCount: Int, likedBy: List<String>)
 }

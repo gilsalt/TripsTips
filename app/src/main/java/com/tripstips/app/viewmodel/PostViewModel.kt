@@ -49,9 +49,13 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
         return repository.getPostsByUserId(userId)
     }
 
-    fun updateLikeCount(postId: String, isLiked: Boolean) {
+    fun getPostById(postId: String): LiveData<Post?> {
+        return repository.getPostById(postId)
+    }
+
+    fun updateLikeCount(postId: String, userId: String) {
         viewModelScope.launch {
-            repository.updateLikeCount(postId, isLiked)
+            repository.updateLikeCount(postId, userId)
         }
     }
 

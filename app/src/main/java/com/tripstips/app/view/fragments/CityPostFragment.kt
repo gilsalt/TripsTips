@@ -20,6 +20,7 @@ import com.tripstips.app.model.City
 import com.tripstips.app.model.Post
 import com.tripstips.app.repos.PostRepository
 import com.tripstips.app.room.PostDatabase
+import com.tripstips.app.view.activities.BaseActivity
 import com.tripstips.app.view.activities.MainActivity
 import com.tripstips.app.viewmodel.PostViewModel
 import com.tripstips.app.viewmodel.WeatherViewModel
@@ -67,7 +68,7 @@ class CityPostFragment : Fragment() {
             }
 
             override fun onItemLikeClick(position: Int, post: Post) {
-                postViewModel.updateLikeCount("${post.id}",true)
+                postViewModel.updateLikeCount("${post.firestoreId}","${BaseActivity.loggedUser?.userId}")
                 adapter.notifyItemChanged(position)
             }
 
@@ -76,16 +77,24 @@ class CityPostFragment : Fragment() {
                 findNavController().navigate(action)
             }
         })
+
+    }
+
+    override fun onResume() {
+        super.onResume()
         getPostsByCity("${city?.name}")
     }
 
     private fun getPostsByCity(city: String) {
         postViewModel.getPostsByCity(city).observe(viewLifecycleOwner, Observer { posts ->
+            postsList.clear()
             if (posts.isNotEmpty()){
-                postsList.clear()
+                postsList.addAll(posts)
+                adapter.notifyItemChanged(0,postsList.size)
             }
-            postsList.addAll(posts)
-            adapter.notifyItemChanged(0,postsList.size)
+            else{
+                adapter.notifyDataSetChanged()
+            }
         })
     }
 
